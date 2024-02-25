@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 class Vector {
 public:
@@ -35,8 +36,25 @@ private:
 };
 
 int main() {
-    int N_OPS, N_ENTRIES;
-    std::cin >> N_OPS >> N_ENTRIES;
+    // Read N_OPS from file
+    std::ifstream opsFile("N_OPS");
+    if (!opsFile) {
+        std::cerr << "Error opening N_OPS file" << std::endl;
+        return 1;
+    }
+    int N_OPS;
+    opsFile >> N_OPS;
+    opsFile.close();
+
+    // Read N_ENTRIES from file
+    std::ifstream entriesFile("N_ENTRIES");
+    if (!entriesFile) {
+        std::cerr << "Error opening N_ENTRIES file" << std::endl;
+        return 1;
+    }
+    int N_ENTRIES;
+    entriesFile >> N_ENTRIES;
+    entriesFile.close();
 
     for (int op = 0; op < N_OPS; ++op) {
         Vector vector1(N_ENTRIES), vector2(N_ENTRIES), result(N_ENTRIES);
