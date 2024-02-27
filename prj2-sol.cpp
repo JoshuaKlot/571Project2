@@ -1,5 +1,7 @@
 #include <iostream>
+#include <cmath>
 #include <fstream>
+#include <sstream>
 
 class Vector {
 public:
@@ -11,10 +13,18 @@ public:
         delete[] data;
     }
 
-    void readVector() {
-        for (int i = 0; i < size; ++i) {
-            std::cin >> data[i];
+    void readVectorFromFile(const std::string& filename) {
+        std::ifstream file(filename);
+        if (!file) {
+            std::cerr << "Error opening vector file: " << filename << std::endl;
+            exit(1);
         }
+
+        for (int i = 0; i < size; ++i) {
+            file >> data[i];
+        }
+
+        file.close();
     }
 
     void printVector() const {
@@ -24,9 +34,9 @@ public:
         std::cout << std::endl;
     }
 
-    void add(const Vector& other, Vector& result) const {
+    void addAbsolute(const Vector& other, Vector& result) const {
         for (int i = 0; i < size; ++i) {
-            result.data[i] = data[i] + other.data[i];
+            result.data[i] = std::abs(data[i]) + std::abs(other.data[i]);
         }
     }
 
@@ -36,35 +46,33 @@ private:
 };
 
 int main() {
-    // Read N_OPS from file
-    std::ifstream opsFile("N_OPS");
-    if (!opsFile) {
-        std::cerr << "Error opening N_OPS file" << std::endl;
-        return 1;
-    }
-    int N_OPS;
-    opsFile >> N_OPS;
-    opsFile.close();
+    // Read vector entries from files
+    std::string filename;
+    std::cin >> filename;
 
-    // Read N_ENTRIES from file
-    std::ifstream entriesFile("N_ENTRIES");
-    if (!entriesFile) {
-        std::cerr << "Error opening N_ENTRIES file" << std::endl;
+    std::istringstream filenameStream(filename);
+    std::string name;
+    int N_OPS, N_ENTRIES;
+    char delimiter;
+
+    if (std::getline(filenameStream, name, '-')) {
+        filenameStream >> N_OPS >> delimiter >> N_ENTRIES;
+    } else {
+        std::cerr << "Invalid filename format: " << filename << std::endl;
         return 1;
     }
-    int N_ENTRIES;
-    entriesFile >> N_ENTRIES;
-    entriesFile.close();
+    std::cout<<"From "<<filename<<":\n";
     std::cout<<N_OPS<<" rows with "<<N_ENTRIES<<" vectors each:\n";
+    
     for (int op = 0; op < N_OPS; ++op) {
         Vector vector1(N_ENTRIES), vector2(N_ENTRIES), result(N_ENTRIES);
 
-        // Read vectors
-        vector1.readVector();
-        vector2.readVector();
+        // Read vectors from files
+        vector1.readVectorFromFile(name + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES));
+        vector2.readVectorFromFile(name + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES));
 
-        // Add vectors
-        vector1.add(vector2, result);
+        // Add absolute values of vectors
+        vector1.addAbsolute(vector2, result);
 
         // Print result
         result.printVector();
