@@ -47,52 +47,25 @@ private:
 };
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <file_pattern>" << std::endl;
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <filename> <N_OPS> <N_ENTRIES>" << std::endl;
         return 1;
     }
 
-    std::string pattern(argv[1]);
-    namespace fs = std::filesystem;
+    std::string filename(argv[1]);
+    int N_OPS = std::stoi(argv[2]);
+    int N_ENTRIES = std::stoi(argv[3]);
 
-    std::string filename;
-
-    // Detect a file based on the specified pattern
-    for (const auto& entry : fs::recursive_directory_iterator(".")) {
-        if (entry.is_regular_file()) {
-            std::string name = entry.path().stem().string();
-            if (name.find(pattern) == 0) {
-                filename = entry.path().filename().string();
-                break;
-            }
-        }
-    }
-
-    if (filename.empty()) {
-        std::cerr << "No matching file found for pattern: " << pattern << std::endl;
-        return 1;
-    }
-
-    std::istringstream filenameStream(filename);
-    std::string name;
-    int N_OPS, N_ENTRIES;
-    char delimiter;
-
-    if (std::getline(filenameStream, name, '-')) {
-        filenameStream >> N_OPS >> delimiter >> N_ENTRIES;
-    } else {
-        std::cerr << "Invalid filename format: " << filename << std::endl;
-        return 1;
-    }
+    Vector result(N_ENTRIES);
     std::cout<<"From "<<filename<<":\n";
     std::cout<<N_OPS<<" rows with "<<N_ENTRIES<<" vectors each:\n";
     
     for (int op = 0; op < N_OPS; ++op) {
-        Vector vector1(N_ENTRIES), vector2(N_ENTRIES), result(N_ENTRIES);
+        Vector vector1(N_ENTRIES), vector2(N_ENTRIES);
 
         // Read vectors from files
-        vector1.readVectorFromFile(name + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES));
-        vector2.readVectorFromFile(name + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES));
+        vector1.readVectorFromFile(filename + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES));
+        vector2.readVectorFromFile(filename + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES));
 
         // Add absolute values of vectors
         vector1.addAbsolute(vector2, result);
