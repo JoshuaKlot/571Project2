@@ -7,7 +7,7 @@
 class Vector {
 public:
     Vector(int size) : size(size) {
-        data = new double[size];
+        entries(std::make_unique<VectorEntry[]>(size))
     }
 
     ~Vector() {
@@ -40,12 +40,24 @@ public:
             result.data[i] = std::abs(data[i]) + std::abs(other.data[i]);
         }
     }
+    
 
 private:
-    double* data;
+    typedef double VectorEntry;
+    std::unique_ptr<VectorEntry[]> entries;
     int size;
+    inline VectorEntry get(size i) const{
+        return entries[i]
+    }
+    inline void set(size i, VectorEntry value) {
+        entries[i] = value;
+  }
 };
-
+long Vector::read(std::istream& in){
+    for(int op =0;op<N_OPS;op++){
+        
+    }
+}
 int main(int argc, char* argv[]) {
     if (argc != 4) {
         std::cerr << "Usage: " << argv[0] << " <filename> <N_OPS> <N_ENTRIES>" << std::endl;
