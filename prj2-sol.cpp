@@ -2,6 +2,7 @@
 #include <cmath>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 
 class Vector {
 public:
@@ -45,10 +46,32 @@ private:
     int size;
 };
 
-int main() {
-    // Read vector entries from files
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <file_pattern>" << std::endl;
+        return 1;
+    }
+
+    std::string pattern(argv[1]);
+    namespace fs = std::filesystem;
+
     std::string filename;
-    std::cin >> filename;
+
+    // Detect a file based on the specified pattern
+    for (const auto& entry : fs::recursive_directory_iterator(".")) {
+        if (entry.is_regular_file()) {
+            std::string name = entry.path().stem().string();
+            if (name.find(pattern) == 0) {
+                filename = entry.path().filename().string();
+                break;
+            }
+        }
+    }
+
+    if (filename.empty()) {
+        std::cerr << "No matching file found for pattern: " << pattern << std::endl;
+        return 1;
+    }
 
     std::istringstream filenameStream(filename);
     std::string name;
