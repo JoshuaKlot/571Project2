@@ -20,7 +20,8 @@ public:
         for (int i = 0; i < size; ++i) {
             file >> entries[i];
         }
-        if(file.eof){
+        if(file.eof()){
+            std::cout<<"You have reached the end of the file";
             file.close();
         }
     }
