@@ -20,8 +20,9 @@ public:
         for (int i = 0; i < size; ++i) {
             file >> entries[i];
         }
-
-        file.close();
+        if(file.eof){
+            file.close();
+        }
     }
 
     void printVector() const {
@@ -31,9 +32,10 @@ public:
         std::cout << std::endl;
     }
 
-    void addAbsolute(const Vector& other, Vector& result) const {
+    void add(const Vector& other, Vector& result) const {
         for (int i = 0; i < size; ++i) {
-            result.entries[i] = std::abs(entries[i]) + std::abs(other.entries[i]);
+            std::cout<<"Adding "<<entries[i]<<" to "<<other.entries[i];
+            result.entries[i] =entries[i] + other.entries[i];
         }
     }
 
@@ -41,21 +43,17 @@ private:
     typedef double VectorEntry;
     std::unique_ptr<VectorEntry[]> entries;
     int size;
-    inline VectorEntry get(int i) const {
-        return entries[i];
-    }
-    inline void set(int i, VectorEntry value) {
-        entries[i] = value;
-    }
 };
 
 int main(int argc, char* argv[]) {
+    
     if (argc != 4) {
-        std::cerr << "Usage: " << argv[1] << " fuck you " << std::endl;
+        std::cerr << "Usage: " << argv[0] << "<filename> <N_OPS> <N_ENTRIES " << std::endl;
         return 1;
     }
 
-    std::string filename(argv[1]);
+    std::string filename=(argv[1]);
+    std::ifstream file(filename);
     int N_OPS = std::stoi(argv[2]);
     int N_ENTRIES = std::stoi(argv[3]);
 
@@ -65,17 +63,19 @@ int main(int argc, char* argv[]) {
 
     for (int op = 0; op < N_OPS; ++op) {
         Vector vector1(N_ENTRIES), vector2(N_ENTRIES);
+        std::string currentFileName = filename + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES)+".txt";
+        std::cout << "Reading from file: " << currentFileName << std::endl;
 
         // Read vectors from files
-        vector1.readVectorFromFile(filename + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES));
-        vector2.readVectorFromFile(filename + "-" + std::to_string(op) + "-" + std::to_string(N_ENTRIES));
+        vector1.readVectorFromFile(filename);
+        vector2.readVectorFromFile(filename);
 
         // Add absolute values of vectors
-        vector1.addAbsolute(vector2, result);
+        vector1.add(vector2, result);
 
         // Print result
         result.printVector();
     }
-
+    file.close();
     return 0;
 }
