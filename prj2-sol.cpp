@@ -6,13 +6,9 @@
 
 class Vector {
 public:
-    Vector(int size) : size(size) {
-        entries(std::make_unique<VectorEntry[]>(size))
-    }
+    Vector(int size) : size(size), entries(std::make_unique<VectorEntry[]>(size)) {}
 
-    ~Vector() {
-        delete[] data;
-    }
+    ~Vector() {}
 
     void readVectorFromFile(const std::string& filename) {
         std::ifstream file(filename);
@@ -22,7 +18,7 @@ public:
         }
 
         for (int i = 0; i < size; ++i) {
-            file >> data[i];
+            file >> entries[i];
         }
 
         file.close();
@@ -30,37 +26,32 @@ public:
 
     void printVector() const {
         for (int i = 0; i < size; ++i) {
-            std::cout << data[i] << ' ';
+            std::cout << entries[i] << ' ';
         }
         std::cout << std::endl;
     }
 
     void addAbsolute(const Vector& other, Vector& result) const {
         for (int i = 0; i < size; ++i) {
-            result.data[i] = std::abs(data[i]) + std::abs(other.data[i]);
+            result.entries[i] = std::abs(entries[i]) + std::abs(other.entries[i]);
         }
     }
-    
 
 private:
     typedef double VectorEntry;
     std::unique_ptr<VectorEntry[]> entries;
     int size;
-    inline VectorEntry get(size i) const{
-        return entries[i]
+    inline VectorEntry get(int i) const {
+        return entries[i];
     }
-    inline void set(size i, VectorEntry value) {
+    inline void set(int i, VectorEntry value) {
         entries[i] = value;
-  }
-};
-long Vector::read(std::istream& in){
-    for(int op =0;op<N_OPS;op++){
-        
     }
-}
+};
+
 int main(int argc, char* argv[]) {
     if (argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <filename> <N_OPS> <N_ENTRIES>" << std::endl;
+        std::cerr << "Usage: " << argv[1] << " fuck you " << std::endl;
         return 1;
     }
 
@@ -69,9 +60,9 @@ int main(int argc, char* argv[]) {
     int N_ENTRIES = std::stoi(argv[3]);
 
     Vector result(N_ENTRIES);
-    std::cout<<"From "<<filename<<":\n";
-    std::cout<<N_OPS<<" rows with "<<N_ENTRIES<<" vectors each:\n";
-    
+    std::cout << "From " << filename << ":\n";
+    std::cout << N_OPS << " rows with " << N_ENTRIES << " vectors each:\n";
+
     for (int op = 0; op < N_OPS; ++op) {
         Vector vector1(N_ENTRIES), vector2(N_ENTRIES);
 
